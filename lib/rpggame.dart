@@ -2,11 +2,16 @@ import 'dart:ui';
 import 'package:flame/game.dart';
 import 'package:flame/flame.dart';
 import 'package:rpggame/components/person.dart';
+import 'dart:math';
+import 'package:flutter/gestures.dart';
+import 'package:rpggame/components/backyard.dart';
 
 class MyGame extends Game {
   Size screenSize;
   double tileSize;
   List<Person> persons;
+  Random rnd;
+  Backyard background;
 
   MyGame() {
     initialize();
@@ -14,24 +19,35 @@ class MyGame extends Game {
 
   void initialize() async {
     persons = List<Person>();
+    rnd = Random();
     resize(await Flame.util.initialDimensions());
-    persons = List<Person>();
+    background = Backyard(this);
+    spawnPerson();
   }
 
   void spawnPerson() {
-    persons.add(Person(this, 50, 50));
+    double x = rnd.nextDouble() * (screenSize.width - tileSize);
+    double y = rnd.nextDouble() * (screenSize.height - tileSize);
+    persons.add(Person(this, x, y));
   }
 
   void render(Canvas canvas) {
-    Rect bgRect = Rect.fromLTWH(0, 0, screenSize.width, screenSize.height);
-    Paint bgPaint = Paint();
-    bgPaint.color = Color(0xff81ecec);
-    canvas.drawRect(bgRect, bgPaint);
+    background.render(canvas);
+
     persons.forEach((Person person) => person.render(canvas));
+  }
+
+  void onTapDown(TapDownDetails d) {
+    persons.forEach((Person person) {
+      if (person.personRect.contains(d.globalPosition)) {
+        person.onTapDown();
+      }
+    });
   }
 
   void update(double t) {
     persons.forEach((Person person) => person.update(t));
+    persons.removeWhere((Person person) => person.isOffScreen);
   }
 
   void resize(Size size) {
