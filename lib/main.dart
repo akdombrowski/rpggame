@@ -13,7 +13,11 @@ void main() async {
 
   Flame.images.loadAll(<String>[
     'bg/tiles-map.png',
-    'chars/fumikowalkforward.png'
+    'chars/fumikowalkforward.png',
+    'chars/fumikorightforward.png',
+    'chars/Fumiko1.png',
+    'chars/Fumiko2.png',
+    'chars/Fumiko3.png'
   ]);
 
   MyGame game = MyGame();
